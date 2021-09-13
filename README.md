@@ -16,7 +16,7 @@ This command-line script parses the log file created on the idena-node-proxy dur
 * The log parser uses the dna_identity entries from the log file on the day of validation, meaning it will include anyone that connected to your node whether they actually validated on your node or not. The actual validation results are retrieved from the idena API using the identity that connected to your node, meaning that if the identity only connected to your node once but in the end switched to a different node for validation, they will still be included in the statistics. You should also make sure that the API keys from previous validations are removed from your idena-node-proxy before validation day.
 * It is recommended that you keep all the individual log files created by the full instructions below, and keep them for each validation, as features could be added to this script to make use of them retroactively.
 * It is required to keep the (for example)```73_ids_good.txt``` file that the script generates for each epoch processed, this is used to calculate the "Repeat customers from previous validation" statistic. If this file is not present for the previous statistic, it will show as zero repeat customers.
-* The "Rejected API keys" statistic are identities trying to use an old API key for your node from a previous validation, or some random API key, or an API key for a different node, it is surprising how often this happens.
+* The "Rejected API keys" statistic are identities trying to use an old API key for your node from a previous validation, or some random API key, or an API key for a different node or their local node.
 
 
 ## Instructions
