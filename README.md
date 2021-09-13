@@ -1,6 +1,8 @@
 # idena-node-proxy validation log parser
 A command-line log parser for idena-node-proxy logs, creating validation statistics for administartors of idena shared/rented nodes.
 
+![Screenshot](logparser_example.png)
+
 ## Introduction
 
 [idena-node-proxy](https://github.com/idena-network/idena-node-proxy) is used to provide multiple different identities shared access to an [idena](https://idena.io) Proof-of-Person blockchain [node](https://github.com/idena-network/idena-go).
