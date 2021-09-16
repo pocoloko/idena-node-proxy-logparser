@@ -37,3 +37,5 @@ The script is not fully automated and requires some manual actions performed bef
 3. rename `logparser.ini_default` to `logparser.ini`. You do not need to edit anything in this version of the script.
 4. Follow the [instructions](https://github.com/pocoloko/idena-node-proxy-logparser#instructions) above
 
+---
+Found this script useful? I accept iDNA donations to address `0x8dc26a6fbdbe2fdb8b5284ab55f56e720b3c42ad`
