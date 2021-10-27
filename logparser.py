@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 # source and important instructions: https://github.com/pocoloko/idena-node-proxy-logparser
 # A log parser for idena-node-proxy logs, creating validation statistics for administartors of shared/rented nodes.
