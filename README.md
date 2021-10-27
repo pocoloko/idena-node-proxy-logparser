@@ -23,13 +23,16 @@ This command-line script parses the log file created on the idena-node-proxy dur
 
 The script is not fully automated and requires some manual actions performed before the data is actually analyzed. **Ideally, this is done immediately after concensus on validation has been reached** to not pick up identities connecting to your node for the next validation.
 
+- Automated preparation of idena-node-proxy logfile for further processing
 1. Complete the [Script Usage](https://github.com/pocoloko/idena-node-proxy-logparser#script-usage) section first
-2. If you want to do the following automatically, run the helper shell script, ```logparserinit.sh``` as follows: ```./logparserinit.sh 2021-09-21 74``` You may skip the rest of these instructions if you are using this method, this shell script will run the python script as well.
-3. Change directory to wherever your access.log file from idena-node-proxy is located: ```cd idena-node-proxy```
-4. Extract only the log entries for the date of the validation (edit the date and filename to match the validation you want to parse from logs) : ```cat access.log | grep 2021-09-21 > validation.epoch.74.log```
-5. This validation.epoch.74.log file now contains all the logs for that specific validation day, but we only want the dna_identity entries: ```cat validation.epoch.74.log | grep dna_identity > dna_identity.epoch.74.log```
-6. Now, because dna_identity endpoint is accessed many times by every identity, we need to remove all duplicates: ```awk '!a[$3]++' dna_identity.epoch.74.log > dna_identity.epoch.74.unique.log```
-7. We now have the file we will actually process with the log parser script, so: ``` python3 ./logparser.py dna_identity.epoch.74.unique.log 74```
+2. Run the helper shell script, ```logparserinit.sh``` as follows: ```./logparserinit.sh 2021-09-21 74``` You may skip the rest of these instructions if you are using this method, this shell script will run the python script as well.
+
+- Manual prepration of idena-node-proxy log file for further processing
+1. Change directory to wherever your access.log file from idena-node-proxy is located: ```cd idena-node-proxy```
+2. Extract only the log entries for the date of the validation (edit the date and filename to match the validation you want to parse from logs) : ```cat access.log | grep 2021-09-21 > validation.epoch.74.log```
+3. This validation.epoch.74.log file now contains all the logs for that specific validation day, but we only want the dna_identity entries: ```cat validation.epoch.74.log | grep dna_identity > dna_identity.epoch.74.log```
+4. Now, because dna_identity endpoint is accessed many times by every identity, we need to remove all duplicates: ```awk '!a[$3]++' dna_identity.epoch.74.log > dna_identity.epoch.74.unique.log```
+5. We now have the file we will actually process with the log parser script, so: ``` python3 ./logparser.py dna_identity.epoch.74.unique.log 74```
 
 ## Script Usage
 
