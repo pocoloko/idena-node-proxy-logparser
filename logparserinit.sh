@@ -20,4 +20,4 @@ cat access.log | grep $1 > validation.epoch.$2.log
 cat validation.epoch.$2.log | grep dna_identity > dna_identity.epoch.$2.log
 awk '!a[$3]++' dna_identity.epoch.$2.log > dna_identity.epoch.$2.unique.log
 echo "Extracted unique dna_identity entries from log file for supplied epoch $2 with date $1, proceeding to process..."
-./logparser.py dna_identity.epoch.$2.unique.log $2
+python3 ./logparser.py dna_identity.epoch.$2.unique.log $2
