@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /usr/bin/python
 
 # source and important instructions: https://github.com/pocoloko/idena-node-proxy-logparser
 # A log parser for idena-node-proxy logs, creating validation statistics for administartors of shared/rented nodes.
@@ -27,6 +27,7 @@ def setup():
         raise SystemExit # Stops execution, throws an exception
     return config
 
+# https://www.pythontutorial.net/python-basics/python-read-text-file/
 # Load text file from disk
 def load_file (filename):
     if os.path.exists(filename) and os.path.getsize(filename) > 0:
@@ -45,9 +46,15 @@ def save_file (filename, text):
         logging.info('We wrote string to file: '+ filename)
 
 # return a tuple with (apikey, identity)
+# skip if we get a "list index out of range" exception which indicates a log entry that isn't correct
+# This is probably not the ideal way of dealing with this, but should work.
 def process_entry (the_entry):
     jsonized = json.loads(the_entry[4])
-    processed_entry = (the_entry[1], ( (jsonized["params"])[0]) )
+    try:
+        processed_entry = (the_entry[1], ( (jsonized["params"])[0]) )
+    except IndexError as e: 
+        logging.warning(f"Skipping potentially improper entry from log file: "+str(the_entry))
+        return
     return processed_entry
 
 # Return a list of tuples each containing one apikey and identity from the logfile
@@ -57,18 +64,24 @@ def process_log (entries):
     for entry in entries:
         items = entry.split(" - ")
         if items[2] != '200':
-            bad_entries.append(process_entry(items))
+            process = process_entry(items)
+            if process != None: 
+                bad_entries.append(process)
         else:
-            good_entries.append(process_entry(items))
+            process = process_entry(items)
+            if process != None: 
+                good_entries.append(process)
     logging.info(f"Processed log, we have {str(len(good_entries))} good entries and {str(len(bad_entries))} bad entries in our log file.")
     return good_entries, bad_entries
 
-# Returns a list of strings representing just the IDs from this processing
+# Returns 2 lists of strings representing the IDs and the apikeysfrom this processing
 def identities(good_entries):
-    processed = []
+    processed_ids = []
+    processed_keys = []
     for entry in good_entries:
-        processed.append(f"{str(entry[1])}")
-    return processed
+        processed_ids.append(f"{str(entry[1])}")
+        processed_keys.append(f"{str(entry[0])}")
+    return processed_ids, processed_keys
 
 # Return number of IDs that are found in both current and previous validation logs
 def number_repeats(current, previous):
@@ -137,8 +150,9 @@ def main(config):
     previous_epoch = (str(int(epoch)-1))
     print('Parsing log file...')
     good_log, bad_log = process_log(load_file(parsefile))
-    current_ids = identities(good_log)
-    save_file(f"{epoch}_ids_good.txt",("\n".join(current_ids)))
+    current_ids, current_keys = identities(good_log)
+    save_file(f"{epoch}_ids_good.txt",("\n".join(current_ids)+"\n"))
+    save_file(f"{epoch}_keys_good.txt",("\n".join(current_keys)+"\n"))
 
     # If we have a file for a previous epoch then we'll check number of repeat customers
     previous_ids = load_file(f"{previous_epoch}_ids_good.txt")
