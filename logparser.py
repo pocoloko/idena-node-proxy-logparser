@@ -9,6 +9,7 @@ import sys # for command line arguments
 import json # JSON stuff
 import requests # web stuff
 import collections # used for counting number of idena states performed via node
+from tqdm import tqdm # nice and easy progress bar for when querying API for identities
 
 #Set up basic logging to file
 logging.basicConfig(filename = ('logparser.log'), level=logging.DEBUG, format=' %(asctime)s -  %(levelname)s -  %(message)s')
@@ -95,17 +96,19 @@ def number_repeats(current, previous):
 def query_identities (the_identities, the_epoch):
     the_validation = []
     the_states = []
-    for identity in the_identities:
-        url = f"https://api.idena.io/api/Epoch/{the_epoch}/Identity/{identity[1]}"
-        res = requests.get(url)
-        res.raise_for_status()
-        # For some reason we have identities that do not exist in a given epoch in our logs, so we'll ignore those. 
-        # Possibly someone created an identity after validation was finished or is connecting for a future validation
-        try:
-            the_validation.append( ( (identity[1]), (res.json()['result']['prevState']), (res.json()['result']['state']) ) )
-            the_states.append( [ ( (res.json()['result']['prevState']), (res.json()['result']['state']) ) ] )
-        except KeyError:
-            logging.error(f"ERROR> Identity {identity[1]} in logfile does not exist in epoch {the_epoch}")
+    with tqdm(the_identities) as progress_bar: # nice progress bar to see where we are with the queries
+        for identity in the_identities:
+            url = f"https://api.idena.io/api/Epoch/{the_epoch}/Identity/{identity[1]}"
+            res = requests.get(url)
+            res.raise_for_status()
+            progress_bar.update(1) # update progress bar
+            # For some reason we have identities that do not exist in a given epoch in our logs, so we'll ignore those. 
+            # Possibly someone created an identity after validation was finished or is connecting for a future validation
+            try:
+                the_validation.append( ( (identity[1]), (res.json()['result']['prevState']), (res.json()['result']['state']) ) )
+                the_states.append( [ ( (res.json()['result']['prevState']), (res.json()['result']['state']) ) ] )
+            except KeyError:
+                logging.error(f"ERROR> Identity {identity[1]} in logfile does not exist in epoch {the_epoch}")
     return the_validation, the_states
 
 # Separate successful and unsuccessful validations and count how many of each state change
